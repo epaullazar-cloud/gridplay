@@ -1,0 +1,131 @@
+/* =============================================
+   GRIDPLAY — Game Page Styles
+   Applies only on game-template.html
+   ============================================= */
+
+/* Back button + title row */
+.game-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.2rem 2rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  transition: color var(--transition);
+  white-space: nowrap;
+}
+.back-btn:hover { color: var(--accent); }
+
+.game-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+#gameTitle {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+.game-category-tag {
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #000;
+  background: var(--accent);
+  padding: 0.2rem 0.7rem;
+  border-radius: 99px;
+}
+
+/* The iframe wrapper — fills available space */
+.game-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  background: var(--surface);
+  min-height: calc(100vh - var(--nav-h) - 120px);
+}
+
+/* The iframe itself */
+.game-frame {
+  width: 100%;
+  max-width: 800px;
+  aspect-ratio: 4 / 3;   /* games are 4:3 — override per game if needed */
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: #000;
+}
+
+/* Description block below game */
+.game-info {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+.game-info h2 {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  margin-bottom: 0.8rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+#gameDescription {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+@media (max-width: 640px) {
+  .game-wrapper { padding: 1rem; }
+  .game-header { padding: 1rem; }
+}
+
+/* ── COMING SOON SCREEN ── */
+.coming-soon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 400px;
+}
+.coming-soon-inner {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+}
+.coming-soon-icon { font-size: 3rem; }
+.coming-soon-inner h2 {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+}
+.coming-soon-inner p {
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+.coming-soon-inner code {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  background: var(--surface);
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+}
+.back-home {
+  margin-top: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent);
+}

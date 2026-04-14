@@ -1,0 +1,324 @@
+/* =============================================
+   GRIDPLAY — Main Stylesheet
+   Design direction: Dark-first monochrome grid
+   with a single neon accent. Monospace headers,
+   clean sans body. No gradients, no fluff.
+   ============================================= */
+
+/* ── CSS VARIABLES (theme tokens) ── */
+:root {
+  --bg:        #0d0d0d;
+  --surface:   #161616;
+  --border:    #2a2a2a;
+  --text:      #e8e8e8;
+  --muted:     #666;
+  --accent:    #b5ff4d;       /* neon lime — the one pop of colour */
+  --accent-dk: #8fcc2e;
+  --nav-h:     64px;
+  --radius:    6px;
+  --font-mono: 'Space Mono', monospace;
+  --font-body: 'DM Sans', sans-serif;
+  --transition: 0.18s ease;
+}
+
+/* Light theme overrides */
+[data-theme="light"] {
+  --bg:      #f5f5f0;
+  --surface: #ffffff;
+  --border:  #ddd;
+  --text:    #111;
+  --muted:   #888;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font: inherit; }
+img { display: block; max-width: 100%; }
+ul { list-style: none; }
+
+/* ── NAVBAR ── */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0 2rem;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+}
+.logo span { color: var(--accent); }
+
+.nav-links {
+  display: flex;
+  gap: 1.5rem;
+  margin-right: auto; /* pushes toggle to the right */
+}
+.nav-links a {
+  font-size: 0.85rem;
+  color: var(--muted);
+  transition: color var(--transition);
+  letter-spacing: 0.03em;
+}
+.nav-links a:hover,
+.nav-links a.active { color: var(--text); }
+
+/* Theme toggle button */
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  color: var(--muted);
+  transition: border-color var(--transition), color var(--transition);
+}
+.theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
+
+/* Hide sun/moon based on theme */
+[data-theme="dark"]  .icon-sun  { display: none; }
+[data-theme="light"] .icon-moon { display: none; }
+
+/* Hamburger — mobile only */
+.nav-hamburger { display: none; font-size: 1.4rem; color: var(--text); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  padding: 5rem 2rem 4rem;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+}
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
+.hero h1 {
+  font-family: var(--font-mono);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+.hero-sub {
+  margin-top: 1.2rem;
+  color: var(--muted);
+  font-size: 1rem;
+  max-width: 380px;
+}
+
+/* Decorative accent boxes — pure CSS, no images */
+.hero-accent {
+  position: absolute;
+  right: 4rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 12px;
+  opacity: 0.18;
+}
+.accent-box {
+  width: 60px;
+  height: 180px;
+  border: 2px solid var(--accent);
+  border-radius: 4px;
+}
+.accent-box:nth-child(2) { height: 120px; align-self: flex-end; }
+.accent-box:nth-child(3) { height: 90px;  align-self: center; }
+
+/* ── CATEGORY FILTER BAR ── */
+.category-bar {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.cat-btn {
+  padding: 0.4rem 1rem;
+  border-radius: 99px;
+  border: 1px solid var(--border);
+  font-size: 0.8rem;
+  font-family: var(--font-mono);
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  transition: all var(--transition);
+}
+.cat-btn:hover { border-color: var(--text); color: var(--text); }
+.cat-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+
+/* ── GAME GRID (outer wrapper — sections handle their own grids) ── */
+.game-grid {
+  display: block;
+}
+
+/* ── GAME CARD ── */
+.game-card {
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  transition: background var(--transition);
+  /* Cards are hidden initially, shown by JS filter */
+}
+.game-card:hover { background: var(--surface); }
+
+/* Thumbnail area — 16:9 ratio using aspect-ratio */
+.card-thumb {
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  position: relative;
+}
+.card-thumb canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Overlay appears on hover */
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+.game-card:hover .card-overlay { opacity: 1; }
+
+.play-btn {
+  background: var(--accent);
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 0.6rem 1.4rem;
+  border-radius: 99px;
+}
+
+/* Card body */
+.card-body {
+  padding: 1rem 1.2rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.card-title {
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.card-category {
+  font-size: 0.72rem;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.card-desc {
+  font-size: 0.82rem;
+  color: var(--muted);
+  margin-top: 0.2rem;
+}
+
+/* ── SECTION HEADINGS ── */
+.section-heading {
+  grid-column: 1 / -1;       /* full width inside the outer grid */
+  padding: 2rem 2rem 0.6rem;
+  border-top: 1px solid var(--border);
+}
+.section-heading:first-child { border-top: none; }
+.section-heading h2 {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Section rows reuse the same auto-fill grid layout */
+.section-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 1px;
+  background: var(--border);
+}
+
+/* ── ABOUT SECTION ── */
+.about-section {
+  max-width: 600px;
+  margin: 5rem auto;
+  padding: 0 2rem;
+  text-align: center;
+}
+.about-section h2 {
+  font-family: var(--font-mono);
+  font-size: 1.4rem;
+  margin-bottom: 1rem;
+}
+.about-section p { color: var(--muted); }
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid var(--border);
+  padding: 1.5rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-family: var(--font-mono);
+}
+
+/* ── HIDDEN UTILITY ── */
+.hidden { display: none !important; }
+
+/* ══════════════════════════════════════
+   RESPONSIVE — MOBILE
+   ══════════════════════════════════════ */
+@media (max-width: 640px) {
+  .nav-links { display: none; }  /* hidden until hamburger logic added */
+  .nav-hamburger { display: block; }
+  .hero-accent { display: none; }
+  .hero h1 { font-size: 3rem; }
+  .footer { flex-direction: column; gap: 0.4rem; text-align: center; }
+}
+
+/* ── COMING SOON CARDS — dimmed, not clickable-looking ── */
+.game-card.coming-soon-card {
+  opacity: 0.45;
+  cursor: default;
+  pointer-events: none;
+}

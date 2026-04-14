@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Memory Match</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d0d0d;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Space Mono', monospace;
+      color: #e8e8e8;
+      padding: 20px;
+    }
+    #hud {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 20px;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+    }
+    #moves-count { color: #4db8ff; }
+    #pairs-count  { color: #b5ff4d; }
+
+    /* 4×4 grid */
+    #board {
+      display: grid;
+      grid-template-columns: repeat(4, 80px);
+      grid-template-rows:    repeat(4, 80px);
+      gap: 10px;
+    }
+
+    /* Each card is a 3D flip container */
+    .card {
+      width: 80px;
+      height: 80px;
+      cursor: pointer;
+      perspective: 600px;  /* enables 3D space */
+    }
+    .card-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.35s ease;
+    }
+    /* Flipped state */
+    .card.flipped .card-inner  { transform: rotateY(180deg); }
+    .card.matched .card-inner  { transform: rotateY(180deg); }
+
+    /* Front (back of card — shown by default) and Back (face) */
+    .card-front, .card-back {
+      position: absolute;
+      inset: 0;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    /* The "face down" side */
+    .card-front {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      font-size: 1.4rem;
+      color: #333;
+    }
+
+    /* The "face up" side — rotated 180° so it shows when flipped */
+    .card-back {
+      background: #1e2a1e;
+      border: 1px solid #4db8ff44;
+      font-size: 2rem;
+      transform: rotateY(180deg);
+    }
+
+    /* Matched cards get a green tint */
+    .card.matched .card-back {
+      background: #1a2a1a;
+      border-color: #b5ff4d66;
+    }
+
+    #message {
+      margin-top: 20px;
+      font-size: 0.8rem;
+      color: #666;
+      letter-spacing: 0.06em;
+      text-align: center;
+    }
+    #restart {
+      margin-top: 14px;
+      padding: 0.5rem 1.2rem;
+      background: #b5ff4d;
+      color: #000;
+      border: none;
+      border-radius: 99px;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="hud">
+    <span>MOVES: <span id="moves-count">0</span></span>
+    <span>PAIRS: <span id="pairs-count">0</span>/8</span>
+  </div>
+
+  <div id="board"></div>
+
+  <div id="message">CLICK A CARD TO START</div>
+  <button id="restart" onclick="initGame()">PLAY AGAIN</button>
+
+  <script>
+    // 8 emoji pairs — feel free to swap these out
+    const EMOJIS = ["🍎","🌊","⚡","🎯","🦊","🌙","🔥","💎"];
+
+    let cards        = [];   // array of card objects { emoji, el }
+    let flipped      = [];   // currently face-up cards (max 2)
+    let matched      = 0;
+    let moves        = 0;
+    let locked       = false; // prevents clicking during flip animation
+
+    /* ── INIT / RESET ── */
+    function initGame() {
+      const board = document.getElementById("board");
+      board.innerHTML = "";
+      document.getElementById("message").textContent = "CLICK A CARD TO START";
+      document.getElementById("restart").style.display = "none";
+      flipped = []; matched = 0; moves = 0; locked = false;
+      updateHUD();
+
+      // Duplicate each emoji to make pairs, then shuffle
+      const deck = [...EMOJIS, ...EMOJIS];
+      shuffle(deck);
+
+      cards = deck.map((emoji, i) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="card-inner">
+            <div class="card-front">◆</div>
+            <div class="card-back">${emoji}</div>
+          </div>
+        `;
+        card.dataset.emoji = emoji;
+        card.dataset.index = i;
+        card.addEventListener("click", () => onCardClick(card));
+        board.appendChild(card);
+        return { emoji, el: card };
+      });
+    }
+
+    /* ── CARD CLICK HANDLER ── */
+    function onCardClick(card) {
+      // Ignore clicks when: locked, already flipped, already matched
+      if (locked) return;
+      if (card.classList.contains("flipped")) return;
+      if (card.classList.contains("matched")) return;
+
+      card.classList.add("flipped");
+      flipped.push(card);
+
+      if (flipped.length === 2) {
+        locked = true;   // prevent more clicks while checking
+        moves++;
+        updateHUD();
+        checkMatch();
+      }
+    }
+
+    /* ── CHECK IF FLIPPED PAIR MATCHES ── */
+    function checkMatch() {
+      const [a, b] = flipped;
+
+      if (a.dataset.emoji === b.dataset.emoji) {
+        // Match!
+        a.classList.add("matched");
+        b.classList.add("matched");
+        matched++;
+        updateHUD();
+        flipped = [];
+        locked  = false;
+
+        if (matched === EMOJIS.length) {
+          // All pairs found
+          document.getElementById("message").textContent =
+            `YOU WIN! ${moves} MOVES`;
+          document.getElementById("restart").style.display = "inline-block";
+        }
+      } else {
+        // No match — flip back after a short delay
+        setTimeout(() => {
+          a.classList.remove("flipped");
+          b.classList.remove("flipped");
+          flipped = [];
+          locked  = false;
+        }, 900);
+      }
+    }
+
+    /* ── UPDATE HUD COUNTERS ── */
+    function updateHUD() {
+      document.getElementById("moves-count").textContent = moves;
+      document.getElementById("pairs-count").textContent = matched;
+    }
+
+    /* ── FISHER-YATES SHUFFLE ── */
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+
+    initGame();
+  </script>
+</body>
+</html>

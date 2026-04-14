@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GRIDPLAY — Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../css/style.css" />
+  <link rel="stylesheet" href="../css/game-page.css" />
+</head>
+<body>
+
+  <!-- NAVIGATION -->
+  <nav class="navbar">
+    <a href="../index.html" class="logo">GRID<span>PLAY</span></a>
+    <ul class="nav-links">
+      <li><a href="../index.html">Home</a></li>
+      <li><a href="../index.html#categories">Categories</a></li>
+      <li><a href="../index.html#about">About</a></li>
+    </ul>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <span class="icon-sun">☀</span>
+      <span class="icon-moon">◑</span>
+    </button>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">☰</button>
+  </nav>
+
+  <!-- BACK BUTTON + GAME META -->
+  <div class="game-header">
+    <a href="../index.html" class="back-btn">← Back to games</a>
+    <div class="game-meta">
+      <h1 id="gameTitle">Loading...</h1>
+      <span class="game-category-tag" id="gameCategory"></span>
+    </div>
+  </div>
+
+  <!-- GAME EMBED AREA
+       The iframe src is set by js/game-page.js
+       based on the ?id= URL parameter -->
+  <div class="game-wrapper">
+    <iframe
+      id="gameFrame"
+      class="game-frame"
+      title="Game"
+      allowfullscreen
+      scrolling="no"
+    ></iframe>
+  </div>
+
+  <!-- GAME DESCRIPTION -->
+  <div class="game-info">
+    <h2>How to Play</h2>
+    <p id="gameDescription">Loading description...</p>
+  </div>
+
+  <!-- Scripts -->
+  <script src="../js/games.js"></script>
+  <script src="../js/game-page.js"></script>
+</body>
+</html>

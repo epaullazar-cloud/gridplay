@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GRIDPLAY</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════
+       NAVIGATION
+  ═══════════════════════════════════ -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">GRID<span>PLAY</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <!-- Light/dark mode toggle -->
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+      <span class="icon-sun">☀</span>
+      <span class="icon-moon">◑</span>
+    </button>
+    <button class="nav-hamburger" id="hamburger" aria-label="Open menu">☰</button>
+  </nav>
+
+  <!-- ═══════════════════════════════════
+       HERO
+  ═══════════════════════════════════ -->
+  <header class="hero">
+    <div class="hero-text">
+      <p class="hero-eyebrow">Free · No Download · No Login</p>
+      <h1>Play.<br/>Instantly.</h1>
+      <p class="hero-sub">Browser games that just work. No installs, no accounts.</p>
+    </div>
+    <div class="hero-accent" aria-hidden="true">
+      <div class="accent-box"></div>
+      <div class="accent-box"></div>
+      <div class="accent-box"></div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════
+       CATEGORY FILTER
+  ═══════════════════════════════════ -->
+  <section class="category-bar" id="categories">
+    <button class="cat-btn active" data-filter="all">All</button>
+    <button class="cat-btn" data-filter="arcade">Arcade</button>
+    <button class="cat-btn" data-filter="puzzle">Puzzle</button>
+    <button class="cat-btn" data-filter="action">Action</button>
+  </section>
+
+  <!-- ═══════════════════════════════════
+       GAME GRID
+       Games are defined in js/games.js
+       and rendered by js/main.js
+  ═══════════════════════════════════ -->
+  <main class="game-grid" id="gameGrid">
+    <!-- Cards injected here by JavaScript -->
+  </main>
+
+  <!-- ═══════════════════════════════════
+       ABOUT
+  ═══════════════════════════════════ -->
+  <section class="about-section" id="about">
+    <h2>About GRIDPLAY</h2>
+    <p>GRIDPLAY is a free collection of browser games — no accounts, no downloads, no nonsense. Just pick a game and play.</p>
+  </section>
+
+  <!-- ═══════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════ -->
+  <footer class="footer">
+    <span>© 2026 GRIDPLAY</span>
+    <span>Made by 😶‍🌫️ with vanilla JS</span>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/games.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Snake</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d0d0d;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: 'Space Mono', monospace;
+      color: #e8e8e8;
+    }
+    #score {
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: #b5ff4d;
+      margin-bottom: 12px;
+    }
+    canvas {
+      border: 1px solid #2a2a2a;
+      display: block;
+    }
+    #message {
+      margin-top: 14px;
+      font-size: 0.8rem;
+      color: #666;
+      letter-spacing: 0.06em;
+    }
+  </style>
+</head>
+<body>
+  <div id="score">SCORE: 0</div>
+  <canvas id="c" width="400" height="400"></canvas>
+  <div id="message">ARROW KEYS / WASD TO MOVE</div>
+
+  <script>
+    const canvas  = document.getElementById("c");
+    const ctx     = canvas.getContext("2d");
+    const CELL    = 20;           // size of each grid cell in px
+    const COLS    = canvas.width  / CELL;  // 20 cells wide
+    const ROWS    = canvas.height / CELL;  // 20 cells tall
+    const COLORS  = { snake: "#b5ff4d", food: "#ff4d6b", bg: "#111", grid: "#161616" };
+
+    let snake, dir, nextDir, food, score, gameLoop, running;
+
+    /* ── INITIALISE / RESET ── */
+    function init() {
+      // Snake starts as 3 cells in the centre
+      snake   = [{ x: 10, y: 10 }, { x: 9, y: 10 }, { x: 8, y: 10 }];
+      dir     = { x: 1, y: 0 };   // moving right
+      nextDir = { x: 1, y: 0 };
+      score   = 0;
+      running = true;
+      updateScore();
+      spawnFood();
+      clearInterval(gameLoop);
+      gameLoop = setInterval(tick, 120);   // game speed in ms
+    }
+
+    /* ── SPAWN FOOD at a random empty cell ── */
+    function spawnFood() {
+      let pos;
+      do {
+        pos = {
+          x: Math.floor(Math.random() * COLS),
+          y: Math.floor(Math.random() * ROWS),
+        };
+      } while (snake.some((s) => s.x === pos.x && s.y === pos.y));
+      food = pos;
+    }
+
+    /* ── UPDATE SCORE DISPLAY ── */
+    function updateScore() {
+      document.getElementById("score").textContent = `SCORE: ${score}`;
+    }
+
+    /* ── MAIN GAME TICK ── */
+    function tick() {
+      dir = nextDir;
+
+      // Calculate new head position
+      const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+      // Check wall collision
+      if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
+        return gameOver();
+      }
+      // Check self collision
+      if (snake.some((s) => s.x === head.x && s.y === head.y)) {
+        return gameOver();
+      }
+
+      snake.unshift(head);  // add new head
+
+      // Check food eaten
+      if (head.x === food.x && head.y === food.y) {
+        score++;
+        updateScore();
+        spawnFood();
+        // Don't pop tail — snake grows
+      } else {
+        snake.pop(); // remove tail to keep length
+      }
+
+      draw();
+    }
+
+    /* ── DRAW EVERYTHING ── */
+    function draw() {
+      // Background
+      ctx.fillStyle = COLORS.bg;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Subtle grid
+      ctx.strokeStyle = COLORS.grid;
+      ctx.lineWidth = 0.5;
+      for (let x = 0; x < COLS; x++) {
+        for (let y = 0; y < ROWS; y++) {
+          ctx.strokeRect(x * CELL, y * CELL, CELL, CELL);
+        }
+      }
+
+      // Snake body
+      snake.forEach((seg, i) => {
+        // Head is brighter
+        ctx.fillStyle = i === 0 ? COLORS.snake : COLORS.snake + "aa";
+        ctx.fillRect(seg.x * CELL + 1, seg.y * CELL + 1, CELL - 2, CELL - 2);
+      });
+
+      // Food
+      ctx.fillStyle = COLORS.food;
+      ctx.beginPath();
+      ctx.arc(
+        food.x * CELL + CELL / 2,
+        food.y * CELL + CELL / 2,
+        CELL / 2 - 2,
+        0, Math.PI * 2
+      );
+      ctx.fill();
+    }
+
+    /* ── GAME OVER ── */
+    function gameOver() {
+      clearInterval(gameLoop);
+      running = false;
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "#b5ff4d";
+      ctx.font = "bold 20px 'Space Mono', monospace";
+      ctx.textAlign = "center";
+      ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2 - 12);
+      ctx.fillStyle = "#666";
+      ctx.font = "12px 'Space Mono', monospace";
+      ctx.fillText("PRESS SPACE TO RESTART", canvas.width / 2, canvas.height / 2 + 16);
+    }
+
+    /* ── KEYBOARD INPUT ── */
+    document.addEventListener("keydown", (e) => {
+      // Restart on space
+      if (e.key === " " && !running) { init(); return; }
+
+      // Arrow keys and WASD — prevent reversing direction
+      const moves = {
+        ArrowUp:    { x:  0, y: -1 },
+        ArrowDown:  { x:  0, y:  1 },
+        ArrowLeft:  { x: -1, y:  0 },
+        ArrowRight: { x:  1, y:  0 },
+        w: { x:  0, y: -1 },
+        s: { x:  0, y:  1 },
+        a: { x: -1, y:  0 },
+        d: { x:  1, y:  0 },
+      };
+      const m = moves[e.key];
+      if (m) {
+        // Don't allow a 180° reverse
+        if (m.x !== -dir.x || m.y !== -dir.y) {
+          nextDir = m;
+        }
+        e.preventDefault(); // stop page scrolling on arrow keys
+      }
+    });
+
+    // Start on load
+    init();
+  </script>
+</body>
+</html>
